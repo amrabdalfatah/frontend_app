@@ -30,7 +30,7 @@ class StylistProvider with ChangeNotifier {
 
     try {
       // Implement your chat history loading logic here
-      // Example: _messages = await ApiService.getChatHistory();
+      //  _messages = await ApiService.getChatHistory();
       await Future.delayed(Duration(seconds: 1)); // Simulate loading
     } catch (e) {
       _error = 'Failed to load chat history';

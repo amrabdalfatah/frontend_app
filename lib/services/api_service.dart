@@ -10,7 +10,7 @@ class ApiService {
   static Future<String> analyzeSkinTone(String imagePath) async {
     final request = http.MultipartRequest(
       'POST',
-      Uri.parse('$_baseUrl/skin-tone-analysis'),
+      Uri.parse('$_baseUrl/analyze/'),
     );
     request.files.add(await http.MultipartFile.fromPath('image', imagePath));
 
@@ -19,6 +19,25 @@ class ApiService {
       return jsonDecode(await response.stream.bytesToString())['mst_score'];
     }
     throw Exception('Failed to analyze skin tone');
+  }
+
+  static Future getProducts() async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/retail/'),
+        headers: {'Content-Type': 'application/json'},
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return (data['products'] as List)
+            .map((e) => OutfitRecommendation.fromJson(e))
+            .toList();
+      } else {
+        throw Exception('API Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Network Error: $e');
+    }
   }
 
   static Future<List<OutfitRecommendation>> getRecommendations(

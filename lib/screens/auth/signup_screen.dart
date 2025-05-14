@@ -14,38 +14,67 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
+  bool isPassword = true;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Create Account')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text('Create Account'),
+        backgroundColor: Colors.white,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(
+                  height: 250,
+                  child: Image.asset(
+                    'assets/images/logo.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 30),
                 TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(labelText: 'Full Name'),
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter your name' : null,
+                  decoration: InputDecoration(
+                    labelText: 'Full Name',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Please enter your name' : null,
                 ),
+                SizedBox(height: 20),
                 TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(labelText: 'Email'),
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(),
+                  ),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Please enter your email' : null,
+                  validator:
+                      (value) =>
+                          value!.isEmpty ? 'Please enter your email' : null,
                 ),
+                SizedBox(height: 20),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: InputDecoration(labelText: 'Password'),
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
                   obscureText: true,
-                  validator: (value) => value!.length < 6
-                      ? 'Password must be at least 6 characters'
-                      : null,
+                  validator:
+                      (value) =>
+                          value!.length < 6
+                              ? 'Password must be at least 6 characters'
+                              : null,
                 ),
                 SizedBox(height: 20),
                 Consumer<AuthProvider>(
@@ -74,9 +103,17 @@ class _SignupScreenState extends State<SignupScreen> {
                     );
                   },
                 ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text('Already have an account? Login'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Already have an account?'),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
+                      child: Text('Login'),
+                    ),
+                  ],
                 ),
               ],
             ),

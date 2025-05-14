@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:fashion_app/models/analysis_result_model.dart';
 import 'package:fashion_app/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,13 +18,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _skinTone;
   final _heightController = TextEditingController();
   final _weightController = TextEditingController();
+  String? _imagePath;
 
   Future<void> _pickImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.camera);
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image != null) {
       // Upload to Django backend for skin tone analysis
-      final skinTone = await ApiService.analyzeSkinTone(image.path);
-      setState(() => _skinTone = skinTone.toString());
+      _imagePath = image.path;
+      final analysisResultJson = await ApiService.analyzeSkinTone(image.path);
+      final analysisRes = AnalysisResultModel.fromJson(
+        jsonDecode(analysisResultJson) as Map<String, dynamic>,
+      );
+      final skinTone = analysisRes.skinTone;
+      setState(() => _skinTone = skinTone);
     }
   }
 
@@ -36,7 +46,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: AssetImage('assets/default_avatar.png'),
+                backgroundImage:
+                    _imagePath == null
+                        ? AssetImage('assets/default_avatar.png')
+                        : FileImage(File(_imagePath!)),
               ),
               TextButton(
                 onPressed: _pickImage,
@@ -63,7 +76,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     await ApiService.updateProfile(
-                      skinTone: _skinTone!, 
+                      skinTone: _skinTone!,
                       height: _heightController.text,
                       weight: _weightController.text,
                     );
